@@ -1,0 +1,91 @@
+import React, { useState, useEffect } from "https://cdn.skypack.dev/react";
+
+import ReactDOM from "https://cdn.skypack.dev/react-dom";
+
+// import { useTransition, animated } from "https://cdnjs.cloudflare.com/ajax/libs/react-spring/9.1.0/web.cjs.js";
+
+function QuoteApp() {
+  const [quote, setQuote] = useState("");
+  const [isShow, setShow] = useState(true);
+
+  const fetchAPI = async () => {
+    const url = "https://api.quotable.io/random";
+    const response = await fetch(url);
+    const data = await response.json();
+    setQuote({
+      text: data.content,
+      author: data.author
+    });
+    setShow(true);
+  };
+
+  const randomHex = () => {
+    const hexMax = 256 * 256 * 256;
+    return (
+      "#" +
+      Math.floor(Math.random() * hexMax)
+        .toString(16)
+        .toUpperCase()
+        .padStart(6, "0")
+    );
+  };
+
+  const changeColor = () => {
+    document.documentElement.style.setProperty("--base-color", randomHex());
+  };
+
+  useEffect(() => {
+    fetchAPI();
+    changeColor();
+  }, []);
+
+  const handleClick = () => {
+    setShow(false);
+    setTimeout(() => {
+      fetchAPI();
+      changeColor();
+    }, 500);
+  };
+
+  return (
+    <container id="container">
+      <div id="quote-box">
+        <div id="text-area" className={isShow ? "full" : "transparent"}>
+          <p id="text">{quote.text}</p>
+          <p id="author">
+            <span>&#8212;</span> {quote.author}
+          </p>
+        </div>
+
+        <div id="btn">
+          <a
+            href="https://twitter.com/intent/tweet"
+            id="tweet-quote"
+            className="hbtn hb-fill-on"
+            target="_blank"
+          >
+            <img src="https://cdn.cms-twdigitalassets.com/content/dam/developer-twitter/images/Twitter_logo_blue_32.png" />
+          </a>
+          <a
+            href="#"
+            id="new-quote"
+            className="hbtn hb-fill-on"
+            onClick={handleClick}
+          >
+            <p>New Quote</p>
+          </a>
+        </div>
+      </div>
+      <div id="by">
+        <p>by Sangkara</p>
+      </div>
+    </container>
+  );
+}
+
+ReactDOM.render(
+  <React.StrictMode>
+    <QuoteApp />
+  </React.StrictMode>,
+  document.getElementById("app")
+);
